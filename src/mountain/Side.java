@@ -1,33 +1,42 @@
 package mountain;
 
 public class Side {
-    private Point p1;
-    private Point p2;
+    private Point a;	//renamed from x
+    private Point b;	//renamed from a
 
-    public Side(Point p1, Point p2) {
-        this.p1 = p1;
-        this.p2 = p2;
+    public Side(Point a, Point b) {
+        this.a = a;
+        this.b = b;
     }
 
-    public Point getPoint1() {
-        return p1;
+    public Point getA() {
+        return a;
     }
 
-    public Point getPoint2() {
-        return p1;
+    public void setA(Point a) {
+        this.a = a;
+    }
+
+    public Point getB() {
+        return b;
+    }
+
+    public void setB(Point b) {
+        this.b = b;
     }
 
     @Override
     public int hashCode() {
-        return p1.hashCode() + p2.hashCode();
+        return a.hashCode() + b.hashCode();
     }
 
     @Override
     public boolean equals(Object x) {
         if (x instanceof Side) {
-            if ((this.getPoint1().equals(((Side) x).getPoint1()) && this.getPoint2().equals(((Side) x).getPoint2()))
+            Side temp = (Side) x;
+            if ((this.getA().equals(temp.getA()) && this.getB().equals(temp.getB()))
                     ||
-                    (this.getPoint2().equals(((Side) x).getPoint1()) && this.getPoint1().equals(((Side) x).getPoint2()))) {
+                    (this.getB().equals(temp.getA()) && this.getA().equals(temp.getB()))) {
                 return true;
             }
         }

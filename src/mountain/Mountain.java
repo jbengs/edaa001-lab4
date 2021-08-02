@@ -7,13 +7,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Mountain extends Fractal {
+    private Point p1, p2, p3;
     private double dev;
-    private Map<Side, Point> map;
+    private Map<Side, Point> sideMap;
+    private String title;
 
-    public Mountain(Double dev) {
+    public Mountain(String title, Double dev, Point p1, Point p2, Point p3) {
         super();
         this.dev = dev;
-        map = new HashMap<>();
+        sideMap = new HashMap<>();
+        this.title = title;
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
     }
     /**
      * Returns the title.
@@ -22,7 +28,7 @@ public class Mountain extends Fractal {
      */
     @Override
     public String getTitle() {
-        return "Mountain";
+        return title;
     }
 
     /**
@@ -32,56 +38,52 @@ public class Mountain extends Fractal {
      */
     @Override
     public void draw(TurtleGraphics turtle) {
-        Point p1 = new Point(100, 400);
-        Point p2 = new Point(300, 200);
-        Point p3 = new Point(500, 500);
-        turtle.moveTo(p1.getX(), p1.getY());
-        fractalTriangle(turtle, this.order, p1, p2, p3, dev);
+        fractalTriangle(turtle, order, dev, p1, p2, p3);
     }
 
-    private void fractalTriangle(TurtleGraphics turtle, int order, Point pA, Point pB, Point pC, double dev) {
+    private void fractalTriangle(TurtleGraphics turtle, int order, double dev, Point a, Point b, Point c) {
         if (order == 0) {
-            //ritar en triangel mellan punkterna
-            turtle.moveTo(pA.getX(), pA.getY());
-            turtle.forwardTo(pB.getX(), pB.getY());
-            turtle.forwardTo(pC.getX(), pC.getY());
-            turtle.forwardTo(pA.getX(), pA.getY());
+            turtle.moveTo(a.getX(), a.getY());
+            turtle.forwardTo(b.getX(), b.getY());
+            turtle.forwardTo(c.getX(), c.getY());
+            turtle.forwardTo(a.getX(), a.getY());
         } else {
-            Side sAB = new Side(pA, pB);
-            Side sBC = new Side(pB, pC);
-            Side sCA = new Side(pC, pA);
-            Point pAB;
-            Point pBC;
-            Point pCA;
+            Side sideAB = new Side(a, b);
+            Side sideBC = new Side(b, c);
+            Side sideCA = new Side(c, a);
+            Point ab;
+            Point bc;
+            Point ca;
 
-            if (map.containsKey(sAB)) {
-                pAB = map.remove(sAB); //Tar bort från mapen eftersom den anldrig kommer användas igen.
+            if (sideMap.containsKey(sideAB)) {
+                ab = sideMap.remove(sideAB);
             } else {
-                pAB = new Point((pA.getX() + pB.getX()) / 2,
-                        (int) RandomUtilities.randFunc(dev) + (pA.getY() + pB.getY()) / 2);
-                map.put(sAB, pAB); //lägger den nya beräkningen i map
+                int t1 = (int) RandomUtilities.randFunc(dev); // separate for the sake of clarification
+                ab = new Point((a.getX() + b.getX()) / 2, t1 + (a.getY() + b.getY()) / 2);
+                // multiplication by t gave irregular results and lost information due to int
+                sideMap.put(sideAB, ab);
             }
 
-            if (map.containsKey(sBC)) {
-                pBC = map.remove(sBC);
+            if (sideMap.containsKey(sideBC)) {
+                bc = sideMap.remove(sideBC);
             } else {
-                pBC = new Point((pB.getX() + pC.getX())/2,
-                        (int) RandomUtilities.randFunc(dev) + (pB.getY() + pC.getY())/2);
-                map.put(sBC, pBC);
+                int t2 = (int) RandomUtilities.randFunc(dev);
+                bc = new Point((b.getX() + c.getX()) / 2, t2 + (b.getY() + c.getY()) / 2);
+                sideMap.put(sideBC, bc);
             }
 
-            if (map.containsKey(sCA)) {
-                pCA = map.remove(sCA);
+            if (sideMap.containsKey(sideCA)) {
+                ca = sideMap.remove(sideCA);
             } else {
-                pCA = new Point((pA.getX() + pC.getX()) / 2,
-                        (int) RandomUtilities.randFunc(dev) + (pA.getY() + pC.getY()) / 2);
-                map.put(sCA, pCA);
+                int t3 = (int) RandomUtilities.randFunc(dev);
+                ca = new Point((c.getX() + a.getX()) / 2, t3 + (c.getY() + a.getY()) / 2);
+                sideMap.put(sideCA, ca);
             }
 
-            fractalTriangle(turtle, order-1, pA, pAB, pCA, dev/2);
-            fractalTriangle(turtle, order-1, pAB, pB, pBC, dev/2);
-            fractalTriangle(turtle, order-1, pCA, pBC, pC, dev/2);
-            fractalTriangle(turtle,order-1, pAB, pBC, pCA, dev/2);
+            fractalTriangle(turtle, order - 1, dev / 2, a, ab, ca);
+            fractalTriangle(turtle, order - 1, dev / 2, ab, b, bc);
+            fractalTriangle(turtle, order - 1, dev / 2, ca, bc, c);
+            fractalTriangle(turtle, order - 1, dev / 2, ab, bc, ca);
         }
     }
 }
